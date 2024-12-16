@@ -1,19 +1,19 @@
 const express = require('express');
 const path = require('path');
 const { Pool } = require('pg');
-require('dotenv').config(); // Cargar variables de entorno desde .env
+require('dotenv').config();
+
 const app = express();
 
-// Configuración de la base de datos
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL || process.env.DATABASE_LOCAL,
     ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false,
 });
 
-// Servir archivos estáticos desde la carpeta 'public'
+// Servir archivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Ruta principal
+// Ruta para la página principal
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
@@ -21,7 +21,6 @@ app.get('/', (req, res) => {
 // Ruta para obtener empleados
 app.get('/empleados', async (req, res) => {
     try {
-        // Consultar todos los empleados desde la base de datos
         const result = await pool.query('SELECT * FROM empleados');
         res.json(result.rows);
     } catch (err) {
@@ -30,7 +29,7 @@ app.get('/empleados', async (req, res) => {
     }
 });
 
-// Iniciar el servidor
+// Puerto dinámico para local o Vercel
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);
