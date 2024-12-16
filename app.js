@@ -1,16 +1,14 @@
 const express = require('express');
 const path = require('path');
 const { Pool } = require('pg');
+require('dotenv').config(); // Cargar variables de entorno desde .env
 const app = express();
 
-// Configuración de la base de datos
 const pool = new Pool({
-    user: 'postgres',      // Reemplaza con tu usuario de PostgreSQL
-    host: 'localhost',       // Servidor de la base de datos
-    database: 'empresa',     // Nombre de tu base de datos
-    password: 'changeme', // Contraseña de tu usuario
-    port: 5432,              // Puerto de PostgreSQL
+    connectionString: process.env.DATABASE_URL || process.env.DATABASE_LOCAL,
+    ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false,
 });
+
 
 app.use(express.static(path.join(__dirname, 'public')));
 
